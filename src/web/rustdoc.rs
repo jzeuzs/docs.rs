@@ -220,7 +220,7 @@ pub(crate) async fn rustdoc_redirector_handler(
     let params = params.with_page_kind(PageKind::Rustdoc);
 
     fn redirect_to_doc(
-        original_uri: Option<&Uri>,
+        original_uri: Option<&EscapedURI>,
         url: EscapedURI,
         cache_policy: CachePolicy,
         path_in_crate: Option<&str>,
@@ -750,6 +750,8 @@ pub(crate) async fn json_download_handler(
     // TODO: we could also additionally read the accept-encoding header here. But especially
     // in combination with priorities it's complex to parse correctly. So for now only
     // file extensions in the URL.
+    // When using Accept-Encoding, we also have to return "Vary: Accept-Encoding" to ensure
+    // the cache behaves correctly.
     let wanted_compression =
         if let Some(ext) = file_extension.map(|ext| ext.0) {
             Some(compression_from_file_extension(&ext).ok_or_else(|| {

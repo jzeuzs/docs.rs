@@ -29,7 +29,7 @@ mod escaped_uri;
 mod extractors;
 mod features;
 mod file;
-mod headers;
+pub(crate) mod headers;
 mod highlight;
 mod licenses;
 mod markdown;
@@ -78,6 +78,10 @@ const PATH: &AsciiSet = &FRAGMENT.add(b'#').add(b'?').add(b'{').add(b'}');
 
 pub(crate) fn encode_url_path(path: &str) -> String {
     utf8_percent_encode(path, PATH).to_string()
+}
+
+pub(crate) fn url_decode<'a>(input: &'a str) -> Result<Cow<'a, str>> {
+    Ok(percent_encoding::percent_decode(input.as_bytes()).decode_utf8()?)
 }
 
 const DEFAULT_BIND: SocketAddr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), 3000);
